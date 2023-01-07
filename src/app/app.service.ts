@@ -9,6 +9,6 @@ export class AppService {
   constructor(private http: HttpClient) {}
 
   shortenUrl(longUrl: any) {
-    return this.http.post<Url>('http://localhost:3000/urls/shorten', { longUrl });
+    return this.http.post<Url>('https://nestjs-s7r1.onrender.com/urls/shorten', { longUrl });
   }
 }
