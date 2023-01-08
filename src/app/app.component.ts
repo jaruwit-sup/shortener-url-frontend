@@ -15,6 +15,7 @@ export class AppComponent {
   searchForm: FormGroup;
   modalRef: BsModalRef;
   shortUrl: string;
+  errorMessage: string;
 
   constructor(
     private fb: FormBuilder,
@@ -29,10 +30,17 @@ export class AppComponent {
   }
 
   onSubmit(template: TemplateRef<any>): void {
-    this.appService.shortenUrl(this.url.value).subscribe((data) => {
-      this.shortUrl = data.shortUrl;
-      this.openModal(template);
-    });
+    this.errorMessage = '';
+    this.appService.shortenUrl(this.url.value).subscribe(
+      (data) => {
+        this.shortUrl = data.shortUrl;
+        this.openModal(template);
+      },
+      (err) => {
+        this.errorMessage = err.error.message[0];
+        this.openModal(template);
+      }
+    );
   }
 
   openModal(template: TemplateRef<any>) {

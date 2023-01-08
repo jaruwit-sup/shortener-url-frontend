@@ -18,17 +18,18 @@
       </div>
       <span class="info">ex. https://github.com</span>
     </form>
-
-    <ng-template #template>
-      <div class="modal-header">
-        <h4 class="modal-title pull-left">Your shorten url</h4>
-      </div>
-      <div class="modal-body">
-        {{shortUrl}}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" (click)="copyUrl()">Copy</button>
-      </div>
-    </ng-template>
   </div>
 </body>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Your shorten url</h4>
+  </div>
+  <div class="modal-body">
+    {{errorMessage !== '' ? errorMessage : shortUrl}}
+  </div>
+  <div class="modal-footer">
+    <button *ngIf="errorMessage === ''" type="button" class="btn btn-default" (click)="copyUrl()">Copy</button>
+    <button *ngIf="errorMessage !== ''" type="button" class="btn btn-default" (click)="modalRef.hide()">Close</button>
+  </div>
+</ng-template>
