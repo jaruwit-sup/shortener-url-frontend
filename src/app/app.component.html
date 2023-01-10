@@ -26,10 +26,10 @@
     <h4 class="modal-title pull-left">Your shorten url</h4>
   </div>
   <div class="modal-body">
-    {{errorMessage !== '' ? errorMessage : shortUrl}}
+    {{responseUrl}}
   </div>
   <div class="modal-footer">
-    <button *ngIf="errorMessage === ''" type="button" class="btn btn-default" (click)="copyUrl()">Copy</button>
-    <button *ngIf="errorMessage !== ''" type="button" class="btn btn-default" (click)="modalRef.hide()">Close</button>
+    <button *ngIf="!isError" type="button" class="btn btn-default" (click)="copyUrl()">Copy</button>
+    <button *ngIf="isError" type="button" class="btn btn-default" (click)="modalRef.hide()">Close</button>
   </div>
 </ng-template>

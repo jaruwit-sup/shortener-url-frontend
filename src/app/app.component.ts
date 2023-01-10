@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { AppService } from './app.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,8 @@ export class AppComponent {
   url: FormControl;
   searchForm: FormGroup;
   modalRef: BsModalRef;
-  shortUrl: string;
-  errorMessage: string;
+  responseUrl: string | undefined;
+  isError: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -29,18 +30,26 @@ export class AppComponent {
     });
   }
 
-  onSubmit(template: TemplateRef<any>): void {
-    this.errorMessage = '';
-    this.appService.shortenUrl(this.url.value).subscribe(
-      (data) => {
-        this.shortUrl = data.shortUrl;
-        this.openModal(template);
-      },
-      (err) => {
-        this.errorMessage = err.error.message[0];
-        this.openModal(template);
+  async onSubmit(template: TemplateRef<any>): Promise<void> {
+    try {
+      this.isError = false;
+      const response = await this.appService
+        .shortenUrl(this.url.value)
+        .toPromise();
+      this.responseUrl = response?.shortUrl;
+    } catch (err) {
+      this.isError = true;
+      if (err instanceof HttpErrorResponse) {
+        this.responseUrl = Array.isArray(err.error.message)
+          ? err.error.message[0]
+          : err.error.message;
+      } else {
+        console.log('Unexpected error', err);
       }
-    );
+    } finally {
+      this.openModal(template);
+      this.url.reset();
+    }
   }
 
   openModal(template: TemplateRef<any>) {
@@ -48,8 +57,9 @@ export class AppComponent {
   }
 
   copyUrl() {
-    this.clipboard.copy(this.shortUrl);
-    this.modalRef.hide();
-    this.url.reset();
+    if (this.responseUrl) {
+      this.clipboard.copy(this.responseUrl);
+      this.modalRef.hide();
+    }
   }
 }
